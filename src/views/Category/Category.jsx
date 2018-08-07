@@ -40,17 +40,17 @@ const styles = {
     }
   },
   buttonPaddingStyle: {
-    padding: "4px"
+    padding: "4px",
+    marginBottom: "4px"
   }
-  // buttonColorStyle: {
-  //   backgroundColor: "#006838"
-  // }
 };
-class Category extends React.Component {
+class News extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      openAddModal: false
+      openAddModal: false,
+      openDeleteModal: false,
+      openChangeModal: false
     }
   }
   handleOpenAddModal = () => {
@@ -59,11 +59,37 @@ class Category extends React.Component {
   handleCloseAddModal = () => {
     this.setState({ openAddModal: false })
   }
+  handleOpenDeleteModal = () => {
+    this.setState({ openDeleteModal: true })
+  }
+  handleCloseDeleteModal = () => {
+    this.setState({ openDeleteModal: false })
+  }
+  handleOpenChangeModal = () => {
+    this.setState({ openChangeModal: true })
+  }
+  handleCloseChangeModal = () => {
+    this.setState({ openChangeModal: false })
+  }
   returnAddButton = (className) => {
     return (
       <div>
         <Button variant="contained" className={className} onClick={this.handleOpenAddModal}>Thêm</Button>
         <Modal onClose={this.handleCloseAddModal} open={this.state.openAddModal}>
+          <GridContainer style={{margin: "auto"}}>
+            <GridItem xs={12} sm={12} md={12}>
+              <Card>Thêm</Card>
+            </GridItem>
+          </GridContainer>
+        </Modal>
+      </div>
+    )
+  }
+  returnDeleteButton = (className) => {
+    return (
+      <div>
+        <Button variant="contained" color="primary" className={className} onClick={this.handleOpenDeleteModal}>Xóa</Button>
+        <Modal onClose={this.handleCloseDeleteModal} open={this.state.openDeleteModal}>
           <GridContainer style={{margin: "auto"}}>
             <GridItem xs={12} sm={12} md={12}>
               <Card>abc</Card>
@@ -73,14 +99,18 @@ class Category extends React.Component {
       </div>
     )
   }
-  returnDeleteButton = (className) => {
-    return (
-      <Button variant="contained" color="primary" className={className} onClick={this.handleDelete}>Xóa</Button>
-    )
-  }
   returnChangeButton = (className) => {
     return (
-      <Button variant="contained" color="secondary" className={className} onClick={this.handleChange}>Sửa</Button>
+      <div>
+        <Button variant="contained" color="secondary" className={className} onClick={this.handleOpenChangeModal}>Sửa</Button>
+        <Modal onClose={this.handleCloseChangeModal} open={this.state.openChangeModal}>
+          <GridContainer style={{margin: "auto"}}>
+            <GridItem xs={12} sm={12} md={12}>
+              <Card>abc</Card>
+            </GridItem>
+          </GridContainer>
+        </Modal>
+      </div>
     )
   }
   render() {
@@ -137,4 +167,4 @@ class Category extends React.Component {
   }
 }
 
-export default withStyles(styles)(Category);
+export default withStyles(styles)(News);

@@ -15,18 +15,12 @@ import Check from "@material-ui/icons/Check";
 import customInputStyle from "assets/jss/material-dashboard-react/components/customInputStyle";
 
 class CustomSelect extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      selectValue: ""
-    }
-  }
   handleChange = (e) => {
-    this.setState({ selectValue: e.target.value}, ()=>console.log(this.state.selectValue))
     this.props.handleChangeSelect(e)
   }
   render() {
     const {
+      value,
       lstItem,
       classes,
       formControlProps,
@@ -64,7 +58,7 @@ class CustomSelect extends React.Component {
             {labelText}
           </InputLabel>
         ) : null}
-        <Select id={id} value={this.state.selectValue} onChange={this.handleChange}
+        <Select id={id} value={value} onChange={this.handleChange}
         input={
           <Input
             name={id}

@@ -6,6 +6,7 @@ import ListItem from "@material-ui/core/ListItem";
 import List from "@material-ui/core/List";
 // core components
 import footerStyle from "assets/jss/material-dashboard-react/components/footerStyle";
+import config from '../../config.js'
 
 function Footer({ ...props }) {
   const { classes } = props;
@@ -39,8 +40,8 @@ function Footer({ ...props }) {
         <p className={classes.right}>
           <span>
             &copy; {1900 + new Date().getYear()}{" "}
-            <a href="https://www.creative-tim.com" className={classes.a}>
-              Creative Tim
+            <a href={config.metLink} className={classes.a}>
+              MET
             </a>, made with love for a better web
           </span>
         </p>

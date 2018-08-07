@@ -18,6 +18,7 @@ class CustomInput extends React.Component {
   }
   render() {
     const {
+      value,
       classes,
       formControlProps,
       labelText,
@@ -55,6 +56,7 @@ class CustomInput extends React.Component {
           </InputLabel>
         ) : null}
         <Input
+          value={value}
           onChange={this.handleChange}
           classes={{
             root: marginTop,

@@ -16,11 +16,19 @@ import dashboardRoutes from "routes/dashboard.jsx";
 
 import dashboardStyle from "assets/jss/material-dashboard-react/layouts/dashboardStyle.jsx";
 
-import image from "assets/img/sidebar-2.jpg";
-import logo from "assets/img/reactlogo.png";
+import ChangeNews from "views/ChangeNews/ChangeNews.jsx";
+
+import image from "assets/img/cr7-bg.jpg";
+import logo from "assets/img/avatar2.png";
+import style from '../../style.js'
 
 const switchRoutes = (
   <Switch>
+    <Route path="/news/:newsID" exact children={
+        ( {match} ) => {
+            return <ChangeNews newsID={match.params.newsID}/>
+        }
+    }/>
     {dashboardRoutes.map((prop, key) => {
       if (prop.redirect)
         return <Redirect from={prop.path} to={prop.to} key={key} />;
@@ -87,8 +95,8 @@ class App extends React.Component {
           />
           {/* On the /maps route we want the map to be on full screen - this is not possible if the content and conatiner classes are present because they have some paddings which would make the map smaller */}
           {this.getRoute() ? (
-            <div className={classes.content}>
-              <div className={classes.container}>{switchRoutes}</div>
+            <div style={style.padding0} className={classes.content}>
+              <div style={style.paddingLR0} className={classes.container}>{switchRoutes}</div>
             </div>
           ) : (
             <div className={classes.map}>{switchRoutes}</div>

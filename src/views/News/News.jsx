@@ -1,28 +1,33 @@
 import React from "react";
 // @material-ui/core components
+import PropTypes from 'prop-types';
 import withStyles from "@material-ui/core/styles/withStyles";
-import InputLabel from "@material-ui/core/InputLabel";
+import Button from "@material-ui/core/Button";
 // core components
 import GridItem from "components/Grid/GridItem.jsx";
 import GridContainer from "components/Grid/GridContainer.jsx";
-import CustomInput from "components/CustomInput/CustomInput.jsx";
-import CustomSelect from "components/CustomInput/CustomSelect.jsx";
-import Button from "components/CustomButtons/Button.jsx";
+import Table from "components/Table/Table.jsx";
 import Card from "components/Card/Card.jsx";
 import CardHeader from "components/Card/CardHeader.jsx";
-import CardAvatar from "components/Card/CardAvatar.jsx";
 import CardBody from "components/Card/CardBody.jsx";
-import CardFooter from "components/Card/CardFooter.jsx";
 
-import avatar from "assets/img/faces/marc.jpg";
+import config from '../../config.js'
+import axios from 'axios'
+
+import { Link } from "react-router-dom";
 
 const styles = {
   cardCategoryWhite: {
-    color: "rgba(255,255,255,.62)",
-    margin: "0",
-    fontSize: "14px",
-    marginTop: "0",
-    marginBottom: "0"
+    "&,& a,& a:hover,& a:focus": {
+      color: "rgba(255,255,255,.62)",
+      margin: "0",
+      fontSize: "14px",
+      marginTop: "0",
+      marginBottom: "0"
+    },
+    "& a,& a:hover,& a:focus": {
+      color: "#FFFFFF"
+    }
   },
   cardTitleWhite: {
     color: "#FFFFFF",
@@ -31,115 +36,122 @@ const styles = {
     fontWeight: "300",
     fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
     marginBottom: "3px",
-    textDecoration: "none"
+    textDecoration: "none",
+    "& small": {
+      color: "#777",
+      fontSize: "65%",
+      fontWeight: "400",
+      lineHeight: "1"
+    }
+  },
+  buttonPaddingStyle: {
+    padding: "4px",
+    marginBottom: "4px"
   }
 };
 
-class UserProfile extends React.Component {
+class News extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      newsCategories: "",
-
+      screenSize: window.innerWidth,
+      newsStatus: [],
+      loading: true,
+      lstItemsNews: [],
+      rowsPerPage: 5,
+      page: 0
     }
+  }
+  componentDidMount = () => {
+    window.addEventListener('resize', this.detectWidth)
+    axios.get(`${config.apiBaseURL}/api/news/list`)
+    .then((response) => {
+      let lstItemsNews = response.data.items.map((x, index) => {
+        let  newsStatus = this.state.newsStatus
+        newsStatus.push(x.status)
+        this.setState({ newsStatus: newsStatus })
+        return [x.id,x.title,(x.status)?"Hoạt động":"Ẩn",x.count_view, <GridContainer style={(this.state.screenSize >= 820)?{minWidth: "133px"}:{minWidth: "0"}}>
+            <GridItem xs={12} sm={6} md={6}>{this.returnChangeButton(this.props.classes.buttonPaddingStyle, x.id)}</GridItem>
+            <GridItem xs={12} sm={6} md={6}>{this.returnChangeNewsStatusButton(this.props.classes.buttonPaddingStyle, index)}</GridItem>
+          </GridContainer>]
+      })
+      this.setState({
+        lstItemsNews: lstItemsNews,
+        loading: false
+      })
+    })
+    .catch((error) => {
+      console.log(error)
+      this.setState({
+        loading: false
+      })
+    })
+  }
+  detectWidth = () => {
+    this.setState({ screenSize: window.innerWidth })
+  }
+  handleChangePage = (event, page) => {
+    this.setState({ page });
+  }
+
+  handleChangeRowsPerPage = event => {
+    this.setState({ rowsPerPage: event.target.value });
+  }
+  handleChangeNewsStatus = (index) => {
+    let newsStatus = this.state.newsStatus
+    if (this.state.newsStatus[index] === 1)
+      newsStatus[index] = 0
+    else newsStatus[index] = 1
+    this.setState({ newsStatus: newsStatus }, ()=>console.log(this.state.newsStatus[index]))
+    //Gọi api change status
+    //this.setState({ newsStatus: !this.state.newsStatus})
   }
   handleChange = (e) => this.setState({ [e.target.id]: e.target.value })
   handleChangeSelect = (e) => this.setState({ [e.target.name]: e.target.value })
-  render() {
-    const { classes } = this.props;
-    const optionsCategory = [
-      {
-        value: 1,
-        text: "abc"
-      },
-      {
-        value: 2,
-        text: "xyz"
-      }
-    ]
+  returnChangeNewsStatusButton = (className, index) => {
+    return (
+      <Button variant="contained" color="primary" className={className} onClick={() => this.handleChangeNewsStatus(index)}>{(this.state.newsStatus[index] === 1)?"Ẩn":"Hiện"}</Button>
+    )
+  }
+  returnChangeButton = (className, numID) => {
     return (
       <div>
+        <Link to={`/news/${numID}`}><Button variant="contained" className={className}>Sửa</Button></Link>
+      </div>
+    )
+  }
+  render() {
+    const { classes } = this.props;
+      return (
         <GridContainer>
           <GridItem xs={12} sm={12} md={12}>
             <Card>
               <CardHeader color="primary">
-                <h4 className={classes.cardTitleWhite}>Đăng tin</h4>
+                <h4 className={classes.cardTitleWhite}>Quản lý tin tức</h4>
               </CardHeader>
               <CardBody>
-                <GridContainer>
-                  <GridItem xs={12} sm={12} md={4}>
-                    <CustomSelect
-                      lstItem={optionsCategory}
-                      handleChangeSelect={this.handleChangeSelect}
-                      labelText="Loại tin tức"
-                      id="newsCategories"
-                      formControlProps={{
-                        fullWidth: true
-                      }}
-                    />
-                  </GridItem>
-                  <GridItem xs={12} sm={12} md={8}>
-                    <CustomSelect
-                      lstItem={optionsCategory}
-                      handleChangeSelect={this.handleChangeSelect}
-                      labelText="Trang"
-                      id="newsSite"
-                      formControlProps={{
-                        fullWidth: true
-                      }}
-                    />
-                  </GridItem>
-                  <GridItem xs={12} sm={12} md={12}>
-                    <CustomInput
-                      handleChange={this.handleChange}
-                      labelText="Tiêu đề"
-                      id="newsTitle"
-                      formControlProps={{
-                        fullWidth: true
-                      }}
-                    />
-                  </GridItem>
-                  <GridItem xs={12} sm={12} md={12}>
-                    <CustomInput
-                      handleChange={this.handleChange}
-                      labelText="Gắn thẻ"
-                      id="newsTags"
-                      formControlProps={{
-                        fullWidth: true
-                      }}
-                    />
-                  </GridItem>
-                  <GridItem xs={12} sm={12} md={12}>
-                    <CustomInput
-                      handleChange={this.handleChange}
-                      labelText="Mô tả"
-                      id="newsDecriptions"
-                      formControlProps={{
-                        fullWidth: true
-                      }}
-                      inputProps={{
-                        multiline: true,
-                        rows: 3
-                      }}
-                    />
-                  </GridItem>
-                  <GridItem xs={12} sm={12} md={12}>
-                    <label className="CustomInput-labelRoot-207">Hình ảnh</label>
-                    <input />
-
-
-                  </GridItem>
-                </GridContainer>
+                <Table
+                  tableHeaderColor="primary"
+                  tableHead={["STT", "Tiêu đề", "Trạng thái", "Lượt xem", "Thao tác"]}
+                  tableData={this.state.lstItemsNews.slice(this.state.page * this.state.rowsPerPage, this.state.page * this.state.rowsPerPage + this.state.rowsPerPage)}
+                  colSpan={5}
+                  count={this.state.lstItemsNews.length}
+                  rowsPerPage={this.state.rowsPerPage}
+                  page={this.state.page}
+                  handleChangePage={this.handleChangePage}
+                  handleChangeRowsPerPage={this.handleChangeRowsPerPage}
+                  haveFooter={true}
+                />
               </CardBody>
-              <CardFooter>
-                <Button color="primary">Đăng tin</Button>
-              </CardFooter>
             </Card>
           </GridItem>
         </GridContainer>
-      </div>
-    );
+      );
   }
 }
 
-export default withStyles(styles)(UserProfile);
+News.propTypes = {
+  classes: PropTypes.object.isRequired,
+};
+
+export default withStyles(styles)(News);
